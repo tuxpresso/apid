@@ -36,15 +36,18 @@ async fn settings_returns_a_200_for_valid_form_data() {
         .await
         .expect("Failed to execute request.");
 
-    let mut buf = [0; 1024];
+    let mut buf = [0; 20];
     let (n, addr) = app
         .boilerd_socket
         .recv_from(&mut buf)
         .expect("Failed to recv.");
     println!("{} bytes response from {:?}", n, addr);
 
+    let expected =
+        b"\x00\x02\x00\x00\x40\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00\x00\x04\x00\x00";
+
     assert_eq!(200, response.status().as_u16());
-    todo!()
+    assert_eq!(*expected, buf);
 }
 
 fn spawn_app() -> TestApp {
